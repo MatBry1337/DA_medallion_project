@@ -1,7 +1,7 @@
--- partition pruning: filtering on the partition key (started_at) makes the
--- planner read only the relevant monthly partition. There is no indexes in this project!
--- all seed data is in 2024-01, so January reads only fact_playback_2024_01;
--- the other months are pruned. Can drop WHERE and then all data is scanned.
+-- Partition pruning: filtering on the partition key (started_at) makes the planner
+-- read only the relevant monthly partition (no indexes in this project).
+-- All data is in 2024-01, so January reads only fact_playback_2024_01; the other
+-- months are pruned. Drop the WHERE and every partition is scanned (see below).
 
 EXPLAIN (ANALYZE, COSTS OFF, BUFFERS)
 SELECT du.plan_code, SUM(f.minutes_played) AS minutes
@@ -10,7 +10,7 @@ JOIN gold.dim_user du ON du.user_sk = f.user_sk
 WHERE f.started_at >= '2024-01-01' AND f.started_at < '2024-02-01'
 GROUP BY du.plan_code;
 
--- WITH WHERE FOR ONE MONTH
+-- With WHERE (one month) - only fact_playback_2024_01 is scanned:
 
 --HashAggregate (actual time=0.155..0.157 rows=5 loops=1)
 --  Group Key: du.plan_code
@@ -32,7 +32,7 @@ GROUP BY du.plan_code;
 --Planning Time: 0.267 ms
 --Execution Time: 0.199 ms
 
--- WITHOUT WHERE FOR ONE MONTH
+-- Without WHERE - Append scans all four partitions:
 
 --HashAggregate (actual time=0.095..0.097 rows=5 loops=1)
 --  Group Key: du.plan_code

@@ -1,3 +1,4 @@
+-- SCD2 dim_user_hist: one row per plan period from subscriptions, valid_to via LEAD().
 CREATE TABLE IF NOT EXISTS silver.dim_user_hist (
       user_id       INTEGER      NOT NULL,
       country       CHAR(2),
@@ -6,7 +7,7 @@ CREATE TABLE IF NOT EXISTS silver.dim_user_hist (
       valid_from    TIMESTAMPTZ  NOT NULL,
       valid_to      TIMESTAMPTZ,
       is_current    BOOLEAN      NOT NULL,
-      PRIMARY KEY (user_id, valid_from)  -- one row per user per validity-period start
+      PRIMARY KEY (user_id, valid_from)  -- One row per user per period start
   );
 
 TRUNCATE silver.dim_user_hist;
@@ -34,5 +35,5 @@ SELECT
     monthly_price,
     valid_from,
     valid_to,
-    valid_to is NULL AS is_current   -- current row
+    valid_to is NULL AS is_current   -- Open period = current
 FROM periods;

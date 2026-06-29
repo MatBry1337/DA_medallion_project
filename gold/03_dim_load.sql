@@ -1,14 +1,15 @@
+-- Idempotent dim load: full refresh, deterministic surrogate keys via ROW_NUMBER().
 TRUNCATE gold.fact_playback, gold.dim_user, gold.dim_content,
          gold.dim_device, gold.dim_date;
 
--- dim_user: SCD2 history straight from Silver, plus a surrogate key.
+-- User dim: SCD2 history from Silver + surrogate key.
 INSERT INTO gold.dim_user
     (user_sk, user_id, country, plan_code, monthly_price, valid_from, valid_to, is_current)
 SELECT ROW_NUMBER() OVER (ORDER BY user_id, valid_from) AS user_sk,
        user_id, country, plan_code, monthly_price, valid_from, valid_to, is_current
 FROM silver.dim_user_hist;
 
--- dim_content: SCD1 (current attributes only), artist_name denormalised in.
+-- Content dim: SCD1, artist_name denormalised in.
 INSERT INTO gold.dim_content
     (content_sk, content_id, title, content_type, artist_name,
      duration_seconds, release_date, is_explicit)
@@ -18,14 +19,14 @@ SELECT ROW_NUMBER() OVER (ORDER BY c.content_id) AS content_sk,
 FROM public.content c
 LEFT JOIN public.artists a ON a.artist_id = c.artist_id;
 
--- dim_device: SCD1.
+-- Device dim: SCD1.
 INSERT INTO gold.dim_device
     (device_sk, device_id, device_type, os_version)
 SELECT ROW_NUMBER() OVER (ORDER BY device_id) AS device_sk,
        device_id, device_type, os_version
 FROM public.devices;
 
--- dim_date: generated calendar over the data window.
+-- Date dim: generated calendar.
 INSERT INTO gold.dim_date
     (date_key, full_date, year, month, iso_week, weekday)
 SELECT to_char(d, 'YYYYMMDD')::int        AS date_key,

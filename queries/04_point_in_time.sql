@@ -1,14 +1,10 @@
--- minutes per tier computed two ways - point-in-time (tier at play time, via
--- f.user_sk) vs naive (user's current tier) - to show the SCD2 history actually
--- changes the answer.
---
--- on the clean seed they're identical (every play falls under the current tier),
--- so we re-use the gold/05 change: user 1 switches premium_individual -> family
--- mid-morning on 2024-01-01, splitting their plays across the two tiers.
---
--- mutates public.subscriptions; step 3 tears it down. run top to bottom.
+-- Minutes per tier two ways: point-in-time (tier at play time, via f.user_sk)
+-- vs naive (user's current tier), to show the SCD2 history changes the answer.
+-- On the clean seed they're identical, so we re-use the gold/05 change: user 1
+-- switches premium_individual -> family at 2024-01-01 07:00, splitting their plays.
+-- Mutates public.subscriptions; step 3 tears it down. Run top to bottom.
 
--- step 1 - apply the change (user 1 -> family @ 2024-01-01 07:00)
+-- Step 1 - Apply the change (user 1 -> family @ 2024-01-01 07:00).
 UPDATE public.subscriptions
    SET ended_at = '2024-01-01 07:00:00+00', status = 'expired'
  WHERE user_id = 1 AND ended_at IS NULL;
@@ -16,9 +12,9 @@ UPDATE public.subscriptions
 INSERT INTO public.subscriptions (user_id, plan_id, started_at, ended_at, status)
 VALUES (1, 4, '2024-01-01 07:00:00+00', NULL, 'active');
 
--- rebuild: silver/03_dimensions.sql, gold/03_dim_load.sql, gold/04_fact_load.sql
+-- Rebuild: silver/03_dimensions.sql, gold/03_dim_load.sql, gold/04_fact_load.sql.
 
--- step 2 - the contrast. expect premium_individual and family to differ.
+-- Step 2 - The contrast. Expect premium_individual and family to differ.
 WITH point_in_time AS (
     SELECT du.plan_code, SUM(f.minutes_played) AS minutes
     FROM gold.fact_playback f
@@ -42,7 +38,7 @@ FROM point_in_time p
 FULL OUTER JOIN naive_current n ON n.plan_code = p.plan_code
 ORDER BY plan_code;
 
--- step 3 - teardown, then rebuild again so the rest runs on clean data.
+-- Step 3 - Teardown, then rebuild so the rest runs on clean data.
 DELETE FROM public.subscriptions
  WHERE user_id = 1 AND plan_id = 4 AND started_at = '2024-01-01 07:00:00+00';
 UPDATE public.subscriptions
@@ -50,4 +46,4 @@ UPDATE public.subscriptions
  WHERE user_id = 1 AND plan_id = 3;
 
 
--- rebuild: silver/03_dimensions.sql, gold/03_dim_load.sql, gold/04_fact_load.sql
+-- Rebuild: silver/03_dimensions.sql, gold/03_dim_load.sql, gold/04_fact_load.sql

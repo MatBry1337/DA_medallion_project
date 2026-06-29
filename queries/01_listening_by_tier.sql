@@ -1,5 +1,5 @@
 -- Minutes per plan tier, each play counted under the tier active at play time
--- (point-in-time is already baked into f.user_sk). pct + rank are window functions.
+-- (point-in-time is already baked into f.user_sk). Pct + rank are window functions.
 SELECT
     du.plan_code,
     d.year,

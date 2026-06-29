@@ -1,5 +1,5 @@
--- paying users (current tier <> 'free') with no plays in the 30 days before the
--- latest event. anchored to MAX(started_at), not NOW() because data is from 2024
+-- Paying users (current tier <> 'free') with no plays in the 30 days before the
+-- latest event. Anchored to MAX(started_at), not NOW() because data is from 2024.
 WITH last_event AS (
     SELECT MAX(started_at) AS max_ts FROM gold.fact_playback
 ),

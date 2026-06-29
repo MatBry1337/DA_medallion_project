@@ -1,3 +1,4 @@
+-- Bronze landing: raw events, append-only, with provenance columns.
 CREATE TABLE IF NOT EXISTS bronze.playback_events_raw (
     bronze_id      BIGSERIAL PRIMARY KEY,
     event_id       TEXT,
@@ -38,5 +39,5 @@ SELECT
         'started_at',e.started_at,
         'ms_played', e.ms_played
     ),
-    e.started_at + INTERVAL '1 hour'
+    e.started_at + INTERVAL '1 hour'   -- Simulate near-real-time arrival (keeps is_late meaningful)
 FROM public.playback_events e;

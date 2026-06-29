@@ -1,3 +1,5 @@
+-- Event-grain fact, partitioned monthly by started_at. Grain = composite PK
+-- (event_id, started_at). No indexes - partition pruning serves the big reads.
 CREATE TABLE IF NOT EXISTS gold.fact_playback (
     event_id        BIGINT        NOT NULL,
     started_at      TIMESTAMPTZ   NOT NULL,
@@ -11,7 +13,7 @@ CREATE TABLE IF NOT EXISTS gold.fact_playback (
     PRIMARY KEY (event_id, started_at)
 ) PARTITION BY RANGE (started_at);
 
--- One partition per month the data spans (started_at -> partition key).
+-- One partition per month.
 CREATE TABLE IF NOT EXISTS gold.fact_playback_2024_01 PARTITION OF gold.fact_playback
     FOR VALUES FROM ('2024-01-01') TO ('2024-02-01');
 CREATE TABLE IF NOT EXISTS gold.fact_playback_2024_02 PARTITION OF gold.fact_playback
