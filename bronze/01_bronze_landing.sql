@@ -1,4 +1,4 @@
-CREATE TABLE bronze.playback_events_raw (
+CREATE TABLE IF NOT EXISTS bronze.playback_events_raw (
     bronze_id      BIGSERIAL PRIMARY KEY,
     event_id       TEXT,
     user_id        TEXT,
@@ -18,7 +18,7 @@ CREATE TABLE bronze.playback_events_raw (
 INSERT INTO bronze.playback_events_raw
     (event_id, user_id, content_id, device_id, session_id,
      started_at, ms_played, completed, source,
-     source_system, source_file, raw_payload)
+     source_system, source_file, raw_payload, ingested_at)
 SELECT
     e.event_id::text,
     e.user_id::text,
@@ -30,12 +30,13 @@ SELECT
     e.completed::text,
     e.source,
     'mobile_app',
-    'plays_'  || to_char(e.ingested_at, 'YYYYMMDD') || '.jsonl',
+    'plays_'  || to_char(e.started_at, 'YYYYMMDD') || '.jsonl',
     jsonb_build_object(
         'event_id',  e.event_id,
         'user_id',   e.user_id,
         'content_id',e.content_id,
         'started_at',e.started_at,
         'ms_played', e.ms_played
-    )
+    ),
+    e.started_at + INTERVAL '1 hour'
 FROM public.playback_events e
