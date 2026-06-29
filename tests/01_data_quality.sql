@@ -1,4 +1,4 @@
--- Each query should return 0 to prove that data is clean
+-- Each query returns 0 rows when the data is clean.
 
 -- 1. Grain uniqueness: no duplicate (event_id, started_at) in the fact.
 SELECT event_id, started_at, COUNT(*)

@@ -1,6 +1,5 @@
--- one big table: one flat row per play with all the descriptive attributes
--- (user + tier at play time, content, device, date). View over the star so it
--- always reflects the current fact
+-- One big table: one flat row per play with all descriptive attributes (user +
+-- tier at play time, content, device, date). A view over the star.
 CREATE OR REPLACE VIEW gold.obt_playback AS
 SELECT
     f.event_id,

@@ -1,3 +1,4 @@
+-- Silver event table: typed and constrained (PK / NOT NULL / CHECK).
 CREATE TABLE IF NOT EXISTS silver.playback_events (
     event_id     BIGINT PRIMARY KEY,
     user_id      INTEGER NOT NULL,
@@ -8,7 +9,7 @@ CREATE TABLE IF NOT EXISTS silver.playback_events (
     ms_played    INTEGER NOT NULL CHECK (ms_played >= 0),
     completed    BOOLEAN NOT NULL,
     source       VARCHAR(20) NOT NULL,
-    is_late      BOOLEAN NOT NULL DEFAULT FALSE, -- arrived > 24h after event time
+    is_late      BOOLEAN NOT NULL DEFAULT FALSE, -- Arrived > 24h after event time
     ingested_at  TIMESTAMPTZ NOT NULL,
     silver_loaded_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );

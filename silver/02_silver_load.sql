@@ -1,3 +1,4 @@
+-- Idempotent MERGE from Bronze: dedup to one row per event (rn=1), flag late rows.
 MERGE INTO silver.playback_events AS s
   USING (
       SELECT
@@ -17,9 +18,9 @@ MERGE INTO silver.playback_events AS s
               ORDER BY ingested_at DESC
           ) AS rn
       FROM bronze.playback_events_raw
-      WHERE event_id ~ '^[0-9]+$'         -- need to be all digits
-          AND session_id IS NOT NULL AND session_id <> ''    -- session id is present
-          AND ms_played ~ '^[0-9]+$'           -- need to be all digits
+      WHERE event_id ~ '^[0-9]+$'                          -- Quality gate: all digits
+          AND session_id IS NOT NULL AND session_id <> ''  -- Session id present
+          AND ms_played ~ '^[0-9]+$'                       -- All digits
   ) b ON s.event_id = b.event_id
 
   WHEN NOT MATCHED AND b.rn = 1 THEN

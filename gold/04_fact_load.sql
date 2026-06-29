@@ -1,3 +1,5 @@
+-- Idempotent fact load: resolve each event to the tier valid at play time
+-- (point-in-time join). Reconcile below.
 INSERT INTO gold.fact_playback
     (event_id, started_at, user_sk, content_sk, device_sk, date_key,
      minutes_played, play_count, completed_plays)
@@ -25,7 +27,7 @@ JOIN gold.dim_date dt ON dt.date_key = to_char(s.started_at, 'YYYYMMDD')::int
 
 ON CONFLICT (event_id, started_at) DO NOTHING;
 
--- RECONCILE: check that every clean silver event lands exactly once
+-- Reconcile: every clean Silver event lands exactly once.
 
 SELECT
     (SELECT COUNT(*) FROM silver.playback_events) AS silver_rows,

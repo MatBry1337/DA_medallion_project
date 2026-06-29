@@ -1,3 +1,4 @@
+-- Gold dimensions. Surrogate keys assigned in 03_dim_load. PK/FK/CHECK only, no indexes.
 CREATE TABLE IF NOT EXISTS gold.dim_user (
     user_sk       INTEGER      PRIMARY KEY,
     user_id       INTEGER      NOT NULL,
