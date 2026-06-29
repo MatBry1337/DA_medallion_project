@@ -1,4 +1,4 @@
- CREATE TABLE IF NOT EXISTS gold.dim_user (
+CREATE TABLE IF NOT EXISTS gold.dim_user (
     user_sk       INTEGER      PRIMARY KEY,
     user_id       INTEGER      NOT NULL,
     country       CHAR(2),
@@ -10,7 +10,7 @@
     CHECK (valid_to IS NULL OR valid_to > valid_from)
 );
 
- CREATE TABLE IF NOT EXISTS gold.dim_content (
+CREATE TABLE IF NOT EXISTS gold.dim_content (
     content_sk       INTEGER      PRIMARY KEY,
     content_id       INTEGER      NOT NULL,
     title            VARCHAR(300) NOT NULL,
@@ -21,7 +21,7 @@
     is_explicit      BOOLEAN      NOT NULL
 );
 
- CREATE TABLE IF NOT EXISTS gold.dim_device (
+CREATE TABLE IF NOT EXISTS gold.dim_device (
     device_sk    INTEGER     PRIMARY KEY,
     device_id    INTEGER     NOT NULL,
     device_type  VARCHAR(20) NOT NULL,
@@ -29,7 +29,7 @@
 );
 
 
- CREATE TABLE IF NOT EXISTS gold.dim_date (
+CREATE TABLE IF NOT EXISTS gold.dim_date (
     date_key   INTEGER PRIMARY KEY,           -- YYYYMMDD
     full_date  DATE    NOT NULL,
     year       INTEGER NOT NULL,

@@ -6,7 +6,7 @@ CREATE TABLE IF NOT EXISTS silver.dim_user_hist (
       valid_from    TIMESTAMPTZ  NOT NULL,
       valid_to      TIMESTAMPTZ,
       is_current    BOOLEAN      NOT NULL,
-      PRIMARY KEY (user_id, valid_from)  -- one user from start time
+      PRIMARY KEY (user_id, valid_from)  -- one row per user per validity-period start
   );
 
 TRUNCATE silver.dim_user_hist;

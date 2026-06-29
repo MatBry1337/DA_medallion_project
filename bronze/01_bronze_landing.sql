@@ -39,4 +39,4 @@ SELECT
         'ms_played', e.ms_played
     ),
     e.started_at + INTERVAL '1 hour'
-FROM public.playback_events e
+FROM public.playback_events e;
