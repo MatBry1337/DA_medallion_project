@@ -1,4 +1,4 @@
- CREATE TABLE IF NOT EXISTS silver.playback_events (
+CREATE TABLE IF NOT EXISTS silver.playback_events (
     event_id     BIGINT PRIMARY KEY,
     user_id      INTEGER NOT NULL,
     content_id   INTEGER NOT NULL,

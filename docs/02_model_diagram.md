@@ -3,64 +3,61 @@
 ## Star schema (Mermaid)
 
 ```mermaid
-  erDiagram
-      DIM_USER    ||--o{ FACT_PLAYBACK : "attributed to (point-in-time)"
-      DIM_CONTENT ||--o{ FACT_PLAYBACK : "describes"
-      DIM_DEVICE  ||--o{ FACT_PLAYBACK : "played on"
-      DIM_DATE    ||--o{ FACT_PLAYBACK : "occurred on"
-  
-      FACT_PLAYBACK {
-          bigint      event_id     PK "natural key (+ part of grain)"
-          timestamptz started_at   PK "partition key (monthly)"
-          int         user_sk      FK
-          int         content_sk   FK
-          int         device_sk    FK
-          int         date_key     FK
-          int         minutes_played
-          int         play_count
-          int         completed_plays
-      }
+erDiagram
+    DIM_USER    ||--o{ FACT_PLAYBACK : "attributed to (point-in-time)"
+    DIM_CONTENT ||--o{ FACT_PLAYBACK : "describes"
+    DIM_DEVICE  ||--o{ FACT_PLAYBACK : "played on"
+    DIM_DATE    ||--o{ FACT_PLAYBACK : "occurred on"
 
-      DIM_DATE {
-          int  date_key PK
-          date full_date
-          int  year   
-          int  month
-          int  iso_week
-          text weekday
-      }
-  
-      DIM_USER {
-          int         user_sk    PK "surrogate"
-          int         user_id       "natural key - traceability"
-          text        email
-          text        country       "SCD2"
-          varchar     plan_code     "SCD2"
-          numeric     monthly_price "SCD2"
-          timestamptz valid_from
-          timestamptz valid_to  
-          boolean     is_current
-      }
-      
-      DIM_CONTENT {
-          int         content_sk    PK "surrogate"  
-          int         content_id "natural key - traceability"
-          varchar     title
-          varchar     content_type   
-          text        artist_name
-          int     duration_seconds     
-          date release_date 
-          boolean     is_explicit
+    FACT_PLAYBACK {
+        bigint      event_id     PK "natural key (+ part of grain)"
+        timestamptz started_at   PK "partition key (monthly)"
+        int         user_sk      FK
+        int         content_sk   FK
+        int         device_sk    FK
+        int         date_key     FK
+        int         minutes_played
+        int         play_count
+        int         completed_plays
+    }
 
-      }
-      
-      DIM_DEVICE {
-          int         device_sk    PK "surrogate"   
-          bigint      device_id    "natural key - traceability"
-          varchar     device_type   
-          varchar     os_version   
+    DIM_DATE {
+        int  date_key PK
+        date full_date
+        int  year
+        int  month
+        int  iso_week
+        text weekday
+    }
 
-      }
+    DIM_USER {
+        int         user_sk    PK "surrogate"
+        int         user_id       "natural key - traceability"
+        text        country       "SCD2"
+        varchar     plan_code     "SCD2"
+        numeric     monthly_price "SCD2"
+        timestamptz valid_from
+        timestamptz valid_to
+        boolean     is_current
+    }
+
+    DIM_CONTENT {
+        int         content_sk    PK "surrogate"
+        int         content_id    "natural key - traceability"
+        varchar     title
+        varchar     content_type
+        text        artist_name
+        int         duration_seconds
+        date        release_date
+        boolean     is_explicit
+    }
+
+    DIM_DEVICE {
+        int         device_sk    PK "surrogate"
+        bigint      device_id    "natural key - traceability"
+        varchar     device_type
+        varchar     os_version
+    }
 ```
 ## Bronze -> Silver -> Gold flow
 

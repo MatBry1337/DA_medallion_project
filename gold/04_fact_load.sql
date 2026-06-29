@@ -25,7 +25,7 @@ JOIN gold.dim_date dt ON dt.date_key = to_char(s.started_at, 'YYYYMMDD')::int
 
 ON CONFLICT (event_id, started_at) DO NOTHING;
 
--- RECONCILE: check if every clean silver event land once
+-- RECONCILE: check that every clean silver event lands exactly once
 
 SELECT
     (SELECT COUNT(*) FROM silver.playback_events) AS silver_rows,
