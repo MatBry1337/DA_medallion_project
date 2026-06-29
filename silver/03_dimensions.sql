@@ -1,4 +1,4 @@
-CREATE TABLE silver.dim_user_hist (
+CREATE TABLE IF NOT EXISTS silver.dim_user_hist (
       user_id       INTEGER      NOT NULL,
       country       CHAR(2),
       plan_code     VARCHAR(30)  NOT NULL,
