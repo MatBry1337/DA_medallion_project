@@ -94,28 +94,29 @@ erDiagram
 ## How to run
 
 Prerequisites: a PostgreSQL `sonicwave` database seeded from the course
-`full_seed.sql` (the `public.*` OLTP tables). The scripts create the `bronze`,
-`silver` and `gold` schemas; every DDL uses `CREATE TABLE IF NOT EXISTS`, so the
-files are safe to re-run.
+`full_seed.sql` (the `public.*` OLTP tables). `bronze/01` creates the `bronze`,
+`silver` and `gold` schemas, and every DDL uses `CREATE TABLE IF NOT EXISTS`, so
+the files are safe to re-run.
 
 Run the core pipeline in order to build a populated, queryable star:
 
-1. `bronze/01_bronze_landing.sql` — land raw events + provenance
+1. `bronze/01_bronze_landing.sql` — create schemas, land raw events + provenance
 2. `silver/01_silver_ddl.sql`, `silver/02_silver_load.sql`, `silver/03_dimensions.sql`
    — typed/deduped events + the SCD2 `dim_user_hist`
 3. `gold/01_dims.sql`, `gold/02_facts.sql`, `gold/03_dim_load.sql`, `gold/04_fact_load.sql`
    — dimensions (with surrogate keys), the partitioned fact, and the
    point-in-time fact load
 
-Then explore and validate:
+Then explore and validate (read-only):
 
-4. `queries/01,02,03,05,06` — analytics (read-only; `06` also creates the OBT view)
+4. `queries/01,03,05,06` — analytics (`06` also creates the OBT view)
 5. `tests/01,02,03` — each returns 0 rows when the data is clean
 
-Demos — run each top to bottom. They mutate `public.subscriptions` or inject a
-late event and then tear it down, re-running `silver/03 → gold/03 → gold/04` at
-their rebuild markers, so the data ends back at baseline:
+Demos — run each top to bottom. Each constructs a scenario the seed lacks (a plan
+change, a late event, a decline), then tears it down so the data ends back at
+baseline. Follow the rebuild markers inside each file:
 
 - `gold/05_scd2_evolution.sql` — a plan change flows through the SCD2 dim and the fact
 - `gold/06_refresh.sql` — a windowed refresh absorbs a late-arriving event
-- `queries/04_point_in_time.sql` — point-in-time vs naive totals (constructs a change)
+- `queries/02_rolling_listening_trend.sql` — weekly listening decline (churn risk)
+- `queries/04_point_in_time.sql` — point-in-time vs naive totals

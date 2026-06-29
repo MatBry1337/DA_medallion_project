@@ -64,7 +64,7 @@ erDiagram
 ```mermaid
 flowchart TD
     subgraph SRC["public.* — SonicWave OLTP (source)"]
-        S1["play_events<br/>(raw playback)"]
+        S1["playback_events<br/>(raw playback)"]
         S2["users / subscriptions<br/>(current plan only)"]
         S3["content / devices"]
     end
