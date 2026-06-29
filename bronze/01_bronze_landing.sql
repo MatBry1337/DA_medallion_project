@@ -1,3 +1,8 @@
+-- Create the medallion schemas (idempotent).
+CREATE SCHEMA IF NOT EXISTS bronze;
+CREATE SCHEMA IF NOT EXISTS silver;
+CREATE SCHEMA IF NOT EXISTS gold;
+
 -- Bronze landing: raw events, append-only, with provenance columns.
 CREATE TABLE IF NOT EXISTS bronze.playback_events_raw (
     bronze_id      BIGSERIAL PRIMARY KEY,
@@ -40,4 +45,6 @@ SELECT
         'ms_played', e.ms_played
     ),
     e.started_at + INTERVAL '1 hour'   -- Simulate near-real-time arrival (keeps is_late meaningful)
-FROM public.playback_events e;
+FROM public.playback_events e
+-- Load once: re-running appends nothing, and we never delete - Bronze stays append-only.
+WHERE NOT EXISTS (SELECT 1 FROM bronze.playback_events_raw);
